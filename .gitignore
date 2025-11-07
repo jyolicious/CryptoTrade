@@ -1,0 +1,10 @@
+# Ignore OS and editor files globally
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Ignore dependency and build folders recursively
+**/node_modules/
+**/build/
+**/dist/
