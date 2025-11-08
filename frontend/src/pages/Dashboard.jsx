@@ -316,14 +316,15 @@ export default function Dashboard() {
 
   function CARD_COLOR(i) {
     const base = [
-      "#5b6b83",
-      "#6b7ea6",
-      "#7e89ab",
-      "#8a7fb3",
-      "#6d90d6",
-      "#6fb3b1",
-      "#9b7fb0",
-    ];
+    "#3ac4d6", // Bright Bluish
+    "#d97373", // Skin
+    "#f59e0b", // Amber / Yellow-Orange
+    "#ef4444", // Vivid Red
+    "#a855f7", // Vibrant Purple
+    "#06b6d4", // Cyan / Aqua
+    "#ec4899", // Pink-Magenta
+  ];
+
     return base[i % base.length];
   }
 
