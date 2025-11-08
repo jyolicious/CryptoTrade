@@ -25,7 +25,7 @@ export default function Login() {
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      alert("Invalid email or password");
+      alert("Invalid Email or password");
     } finally {
       setIsLoading(false);
     }
