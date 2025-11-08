@@ -85,6 +85,11 @@ export default function Buy() {
 
       // success
       setIsBuying(false);
+      // notify Dashboard in same tab
+      window.dispatchEvent(new Event("refreshDashboard"));
+      // notify Dashboard in other tabs (storage event)
+      localStorage.setItem("lastTxAt", Date.now().toString());
+
       alert("Purchase successful!");
       navigate("/dashboard");
     } catch (err) {
@@ -234,7 +239,7 @@ export default function Buy() {
                 <input
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount (in units of coin, e.g., 0.01)"
+                  placeholder="Enter amount (in units of coin eg. 250)"
                   inputMode="decimal"
                   style={{
                     width: "100%",
@@ -306,15 +311,11 @@ export default function Buy() {
         </div>
       </div>
 
+      {/* ✅ Only this CSS added */}
       <style>{`
-        @keyframes pulse {
-          0%,100% { transform: scale(1); opacity: 0.22; }
-          50% { transform: scale(1.03); opacity: 0.28; }
-        }
-
-        /* small responsive tweaks */
-        @media (max-width: 880px) {
-          div[style*="max-width: '32rem'"] { max-width: calc(100% - 2rem); }
+        select option {
+          color: #000 !important;
+          background-color: #fff !important;
         }
       `}</style>
     </div>

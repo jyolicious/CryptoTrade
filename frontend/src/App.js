@@ -5,8 +5,8 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Buy from "./pages/Buy";
 import Transactions from "./pages/Transactions";
+import Sell from "./pages/Sell";
 import ProtectedRoute from "./components/ProtectedRoute";
-import "./tailwind.css";
 
 function App() {
   return (
@@ -46,6 +46,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/sell"
+          element={
+           <ProtectedRoute>
+             <Sell />
+           </ProtectedRoute>
+          }
+       />
+
 
         {/* FALLBACK */}
         <Route path="*" element={<Login />} />

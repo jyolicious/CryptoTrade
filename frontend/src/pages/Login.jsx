@@ -283,6 +283,10 @@ export default function Login() {
           0%, 100% { opacity: 0.3; }
           50% { opacity: 0.4; }
         }
+         /* small responsive tweaks */
+        @media (max-width: 880px) {
+          div[style*="max-width: '32rem'"] { max-width: calc(100% - 2rem); }
+        }
       `}</style>
     </div>
   );
