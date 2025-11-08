@@ -1,10 +1,6 @@
-// ✅✅✅ ONLY CHANGED TWO THINGS AS REQUESTED ✅✅✅
-// 1. Logout button moved to bottom (under news card)
-// 2. Added extra spacing between Holdings and Available Coins
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Line, Pie } from "react-chartjs-2";
+import { Line, Pie, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   LineElement,
@@ -14,10 +10,20 @@ import {
   Tooltip,
   Legend,
   ArcElement,
+  BarElement,
 } from "chart.js";
 import api from "../api";
 
-ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, ArcElement);
+ChartJS.register(
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Legend,
+  ArcElement,
+  BarElement
+);
 
 const DEFAULT_PRICE_BY_SYMBOL = { BTC: 72000, ETH: 4200, SOL: 12000, BNB: 300, ADA: 40, XRP: 25, DOGE: 7, MATIC: 80 };
 const MIN_FALLBACK_PRICE = 1;
@@ -116,7 +122,7 @@ export default function Dashboard() {
       { title: "Mining Update", text: "Bitcoin miners saw improved profitability this week due to stable difficulty and rising transaction fees. Many are upgrading infrastructure in anticipation of future price moves and higher block reward competition." },
 
       { title: "Stablecoin Flow", text: "Stablecoin inflows into exchanges increased notably, often a precursor to heightened trading activity. Analysts suggest traders may be positioning for upcoming volatility events or reacting to changing macroeconomic signals." },
-  ],
+    ],
     []
   );
 
@@ -289,6 +295,7 @@ export default function Dashboard() {
     setPriceHistory(hist);
   }, [selectedCoin, coins]);
 
+  // PIE DATA
   const pieData = useMemo(() => {
     const arr =
       (portfolio || [])
@@ -314,19 +321,26 @@ export default function Dashboard() {
     ],
   };
 
-  function CARD_COLOR(i) {
-    const base = [
-    "#3ac4d6", // Bright Bluish
-    "#d97373", // Skin
-    "#f59e0b", // Amber / Yellow-Orange
-    "#ef4444", // Vivid Red
-    "#a855f7", // Vibrant Purple
-    "#06b6d4", // Cyan / Aqua
-    "#ec4899", // Pink-Magenta
-  ];
+  // BAR DATA (NEW) - shows value per coin (quantity * price)
+  const barChartData = useMemo(() => {
+    const items = (portfolio || []).map((p) => {
+      const value = Number((p.quantity * getBestPriceForSymbol(p.symbol)).toFixed(2));
+      return { symbol: p.symbol, value };
+    }).filter((x) => x.value > 0);
 
-    return base[i % base.length];
-  }
+    return {
+      labels: items.map((i) => i.symbol),
+      datasets: [
+        {
+          label: "Value (INR)",
+          data: items.map((i) => i.value),
+          backgroundColor: items.map((_, idx) => CARD_COLOR(idx)),
+          borderColor: "rgba(255,255,255,0.06)",
+          borderWidth: 1,
+        },
+      ],
+    };
+  }, [portfolio, coins]);
 
   const lineChartData = {
     labels: priceHistory.map((_, i) => `${i}`),
@@ -369,7 +383,7 @@ export default function Dashboard() {
               minHeight: "calc(100vh - 40px)",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between",   // ✅ Allow logout at bottom
+              justifyContent: "space-between",
             }}
           >
             {/* TOP SECTION */}
@@ -427,7 +441,7 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* ✅ NEWS CARD */}
+              {/* NEWS CARD */}
               <div
                 onMouseEnter={() => setNewsPaused(true)}
                 onMouseLeave={() => setNewsPaused(false)}
@@ -446,7 +460,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* ✅ LOGOUT BUTTON MOVED TO BOTTOM */}
+            {/* LOGOUT BUTTON AT BOTTOM */}
             <div style={{ marginTop: 20 }}>
               <button onClick={logout} style={logoutBtn}>
                 Logout
@@ -468,7 +482,41 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div style={{ width: 560, display: "flex", gap: 12 }}>
+            {/* ----- CHARTS ROW (BAR | LINE | PIE) ----- */}
+            <div style={{ width: 760, display: "flex", gap: 12 }}>
+              {/* BAR CHART (LEFT) */}
+              <div
+                style={{
+                  width: 220,
+                  background: "rgba(255,255,255,0.02)",
+                  padding: 12,
+                  borderRadius: 10,
+                  border: "1px solid rgba(255,255,255,0.04)",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <div style={{ fontWeight: 800, marginBottom: 8 }}>Holdings Value</div>
+                <div style={{ height: 180 }}>
+                  <Bar
+                    data={barChartData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false },
+                        tooltip: {},
+                      },
+                      scales: {
+                        x: { ticks: { color: "#9ca3af" }, grid: { display: false } },
+                        y: { ticks: { color: "#9ca3af" }, grid: { color: "rgba(255,255,255,0.03)" } },
+                      },
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* LINE CHART (CENTER) */}
               <div
                 style={{
                   flex: 1,
@@ -506,6 +554,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
+              {/* PIE CHART (RIGHT) */}
               <div
                 style={{
                   width: 220,
@@ -645,7 +694,6 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* ✅ EXTRA SPACE ADDED HERE */}
           <div style={{ height: 20 }}></div>
 
           {/* ---------- AVAILABLE COINS ---------- */}
@@ -860,3 +908,17 @@ const logoutBtn = {
   fontWeight: 700,
   cursor: "pointer",
 };
+
+function CARD_COLOR(i) {
+  const base = [
+    "#3ac4d6", // Bright Bluish
+    "#3b82f6", // blue
+    "#f59e0b", // Amber / Yellow-Orange
+    "#ef4444", // Vivid Red
+    "#a855f7", // Vibrant Purple
+    "#06b6d4", // Cyan / Aqua
+    "#ec4899", // Pink-Magenta
+  ];
+
+  return base[i % base.length];
+}
