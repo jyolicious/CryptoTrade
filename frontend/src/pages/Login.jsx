@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API from "../api";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -7,25 +9,26 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e) => {
-    if (e) e.preventDefault();
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
 
-    // demo delay to simulate network call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const res = await API.post("/auth/login", {
+        email,
+        password
+      });
 
-      // store a demo token so protected pages won't immediately redirect
-      // replace with real token from your API when integrating
-      try {
-        localStorage.setItem("token", "demo-token");
-      } catch (err) {
-        console.warn("Could not store token in localStorage:", err);
-      }
+      // ✅ Save real JWT from backend
+      localStorage.setItem("token", res.data.token);
 
-      // navigate to absolute dashboard path
       navigate("/dashboard");
-    }, 1500);
+    } catch (err) {
+      console.error(err);
+      alert("Invalid email or password");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

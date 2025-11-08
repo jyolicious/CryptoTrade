@@ -12,17 +12,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* ROOT route */}
+        <Route path="/" element={<Login />} />
 
+        {/* PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
+        {/* PROTECTED ROUTES */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
-              <h1 className="text-4xl text-blue-500">Hello Tailwind v4!</h1>
-
             </ProtectedRoute>
           }
         />
@@ -45,7 +47,7 @@ function App() {
           }
         />
 
-        {/* Default route */}
+        {/* FALLBACK */}
         <Route path="*" element={<Login />} />
       </Routes>
     </BrowserRouter>
