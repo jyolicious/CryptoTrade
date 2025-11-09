@@ -141,11 +141,6 @@ Run dev server: npm start
 Frontend: React.js, Chart.js, Axios
 
 Backend: Node.js, Express.js, MongoDB
-
-Design: Custom-designed by Jyotsna Kasibhotla, optimized for dark-mode visual clarity.
-
-Special thanks to open-source maintainers of the above frameworks.
-
 6.License
 
 © 2025 Jyotsna Kasibhotla. All Rights Reserved.
